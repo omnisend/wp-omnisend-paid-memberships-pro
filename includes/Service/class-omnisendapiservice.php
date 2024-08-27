@@ -63,8 +63,8 @@ class OmnisendApiService {
 	 * @return array Tracker data.
 	 */
 	public function create_omnisend_contact( array $form_data ): array {
-		$contact  = $this->contact_mapper->get_omnisend_contact( $form_data );
-		$response = $this->client->create_contact( $contact );
+		$contact  = $this->contact_mapper->create_contact( $form_data );
+		$response = $this->client->save_contact( $contact );
 
 		if ( ! $this->response_validator->is_valid( $response ) ) {
 			return array();
@@ -77,7 +77,7 @@ class OmnisendApiService {
 	}
 
 	/**
-	 * Creates an Omnisend contact.
+	 * Update Omnisend contact by editing profile form.
 	 *
 	 * @param array $form_data The form data.
 	 *
@@ -88,7 +88,7 @@ class OmnisendApiService {
 		$response     = $this->client->get_contact_by_email( $user_email );
 		$phone_number = $response->get_contact()->get_phone();
 
-		$contact = $this->contact_mapper->get_omnisend_update_contact( $form_data, $phone_number );
+		$contact = $this->contact_mapper->update_profile_contact( $form_data, $phone_number );
 		$this->client->save_contact( $contact );
 	}
 
@@ -122,7 +122,7 @@ class OmnisendApiService {
 	 *
 	 */
 	public function update_membership_level( string $user_email, string $membership_level ): void {
-		$contact = $this->contact_mapper->get_omnisend_update_membership_level( $user_email, $membership_level );
-		$this->client->create_contact( $contact );
+		$contact = $this->contact_mapper->update_membership_level( $user_email, $membership_level );
+		$this->client->save_contact( $contact );
 	}
 }

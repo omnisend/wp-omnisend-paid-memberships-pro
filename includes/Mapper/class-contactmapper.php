@@ -24,13 +24,13 @@ class ContactMapper {
 	private const CONSENT_PREFIX = 'paid_memberships_pro';
 
 	/**
-	 * Get Contact object
+	 * Create/update Omnisend contact
 	 *
 	 * @param array  $mapped_fields
 	 *
 	 * @return Contact object
 	 */
-	public function get_omnisend_contact( array $mapped_fields ): Contact {
+	public function create_contact( array $mapped_fields ): Contact {
 		$contact = new Contact();
 
 		$current_user = wp_get_current_user();
@@ -49,25 +49,30 @@ class ContactMapper {
 		$contact->set_state( $mapped_fields['bstate'] ?? '' );
 		$contact->set_country( $mapped_fields['bcountry'] ?? '' );
 		$contact->set_city( $mapped_fields['bcity'] ?? '' );
+		$contact->set_welcome_email( true );
 
-			$contact->set_welcome_email( true );
+		if ( ! isset( $options['setting_field'] ) ) {
+			if ( isset( $mapped_fields['bconsentEmail'] ) ) {
+				$contact->set_email_subscriber();
+				$contact->set_email_consent( self::CONSENT_PREFIX );
+			} else {
+				$contact->set_email_consent( self::CONSENT_PREFIX );
+				$contact->set_email_unsubscriber();
+			}
 
-		if ( isset( $mapped_fields['bconsentEmail'] ) || ! isset( $options['setting_field'] ) ) {
+			if ( isset( $mapped_fields['bconsentPhone'] ) ) {
+				$contact->set_phone_consent( self::CONSENT_PREFIX );
+				$contact->set_phone_subscriber();
+			} else {
+				$contact->set_phone_consent( self::CONSENT_PREFIX );
+				$contact->set_phone_unsubscriber();
+			}
+		} else {
 			$contact->set_email_consent( self::CONSENT_PREFIX );
-			$contact->set_email_opt_in( $user_email );
 			$contact->set_email_subscriber();
-		} else {
-			$contact->set_email_consent( self::CONSENT_PREFIX );
-			$contact->set_email_opt_in( '' );
-		}
 
-		if ( isset( $mapped_fields['bconsentPhone'] ) || ! isset( $options['setting_field'] ) ) {
+			$contact->set_phone_consent( self::CONSENT_PREFIX );
 			$contact->set_phone_subscriber();
-			$contact->set_phone_consent( self::CONSENT_PREFIX );
-			$contact->set_phone_opt_in( $mapped_fields['bphone'] );
-		} else {
-			$contact->set_phone_consent( self::CONSENT_PREFIX );
-			$contact->set_phone_opt_in( '' );
 		}
 
 		if ( isset( $mapped_fields['pmpro_level'] ) ) {
@@ -80,14 +85,14 @@ class ContactMapper {
 	}
 
 	/**
-	 * Get Contact object
+	 * Update Omnisend contact on profile form change.
 	 *
 	 * @param array $mapped_fields
 	 * @param string|null $phone_number
 	 *
 	 * @return Contact object
 	 */
-	public function get_omnisend_update_contact( array $mapped_fields, string $phone_number = null ): Contact {
+	public function update_profile_contact( array $mapped_fields, string $phone_number = null ): Contact {
 		$contact = new Contact();
 
 		$contact->set_email( $mapped_fields['user_email'] );
@@ -132,14 +137,14 @@ class ContactMapper {
 	}
 
 	/**
-	 * Get Contact object
+	 * Update Omnisend contact custom property membership_level
 	 *
 	 * @param string $user_email
 	 * @param string $membership_level
 	 *
 	 * @return Contact object
 	 */
-	public function get_omnisend_update_membership_level( string $user_email, string $membership_level ): Contact {
+	public function update_membership_level( string $user_email, string $membership_level ): Contact {
 		$contact = new Contact();
 
 		$contact->set_email( $user_email );
@@ -151,7 +156,7 @@ class ContactMapper {
 	}
 
 	/**
-	 * Get Contact object
+	 * Get PMP membership level name
 	 *
 	 * @param int $level_id
 	 *

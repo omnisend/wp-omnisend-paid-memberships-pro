@@ -1,12 +1,12 @@
 <?php
 /**
  * Plugin Name: Omnisend for Paid Memberships Pro Add-On
- * Description: A Paid Memberships Pro add-on to sync contacts with Omnisend. In collaboration with Omnisend for WooCommerce plugin it enables better customer tracking
- * Version: 1.0.1
+ * Description: A Paid Memberships Pro add-on to sync contacts with Omnisend. In collaboration with Paid Memberships Pro plugin it enables better customer tracking
+ * Version: 1.0.0
  * Author: Omnisend
  * Author URI: https://www.omnisend.com
  * Developer: Omnisend
- * Developer URI: https://developers.omnisend.com
+ * Developer URI: https://omnisend.com
  * Text Domain: omnisend-for-paid-memberships-pro-add-on
  * ------------------------------------------------------------------------
  * Copyright 2024 Omnisend
@@ -93,9 +93,7 @@ class Omnisend_PaidMembershipsProAddOn {
 			return;
 		}
 
-		$api_key = get_option( 'omnisend_api_key', null );
-
-		if ( is_null( $api_key ) ) {
+		if ( ! Omnisend\SDK\V1\Omnisend::is_connected() ) {
 			deactivate_plugins( $paid_memberships_pro_addon_plugin );
 			add_action( 'admin_notices', array( 'Omnisend_PaidMembershipsProAddOn', 'omnisend_api_key_notice' ) );
 
