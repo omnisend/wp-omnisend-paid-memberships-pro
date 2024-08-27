@@ -52,17 +52,16 @@ class ConsentService {
 			}
 
 			echo '<div class="pmpro_checkout-field pmpro_checkout-field-consent-email">
-                <label for="bconsentEmail">' . esc_html( __( 'Subscribe me to your mailing lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
-                <input id="bconsentEmail" name="bconsentEmail" ' . esc_html( $email_consent ) . ' type="checkbox" class="input" value="1">
-		    </div>';
+				<label for="bconsentEmail">' . esc_html( __( 'Subscribe me to your mailing lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
+				<input id="bconsentEmail" name="bconsentEmail" ' . esc_html( $email_consent ) . ' type="checkbox" class="input" value="1">
+			</div>';
 
 		}
 
-		echo '
-        <div class="pmpro_checkout-field pmpro_checkout-field-consent-phone">
-            <label for="bconsentPhone">' . esc_html( __( 'Subscribe me to your SMS lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
-            <input id="bconsentPhone" name="bconsentPhone" ' . esc_html( $sms_consent ) . ' type="checkbox" class="input" value="1">
-        </div>';
+		echo '<div class="pmpro_checkout-field pmpro_checkout-field-consent-phone">
+			<label for="bconsentPhone">' . esc_html( __( 'Subscribe me to your SMS lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
+			<input id="bconsentPhone" name="bconsentPhone" ' . esc_html( $sms_consent ) . ' type="checkbox" class="input" value="1">
+		</div>';
 		echo '</div>';
 	}
 
@@ -70,9 +69,9 @@ class ConsentService {
 		$current_user = wp_get_current_user();
 		if ( 0 == $current_user->ID ) {
 			echo '<div class="pmpro_checkout-field pmpro_checkout-field-consent-email">
-                <label for="bconsentEmail">' . esc_html( __( 'Subscribe me to your mailing lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
-                <input id="bconsentEmail" name="bconsentEmail" type="checkbox" class="input" value="1">
-            </div>';
+				<label for="bconsentEmail">' . esc_html( __( 'Subscribe me to your mailing lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
+				<input id="bconsentEmail" name="bconsentEmail" type="checkbox" class="input" value="1">
+			</div>';
 		}
 	}
 
@@ -85,22 +84,20 @@ class ConsentService {
 			$email_consent = 'checked';
 		}
 
-		echo '
-            <div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-consent-email">
-			    <label for="bconsentEmail">' . esc_html( __( 'Subscribe me to your mailing lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
-				<input id="bconsentEmail" name="bconsentEmail" ' . esc_html( $email_consent ) . ' type="checkbox" class="input" value="1">
-			</div>';
+		echo '<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-consent-email">
+			<label for="bconsentEmail">' . esc_html( __( 'Subscribe me to your mailing lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
+			<input id="bconsentEmail" name="bconsentEmail" ' . esc_html( $email_consent ) . ' type="checkbox" class="input" value="1">
+		</div>';
 
 		$sms_consent = '';
 		if ( $contract_data['sms'] == 'subscribed' ) {
 			$sms_consent = 'checked';
 		}
 
-		echo '
-            <div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-consent-phone">
-			    <label for="bconsentPhone">' . esc_html( __( 'Subscribe me to your SMS lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
+		echo '<div class="pmpro_member_profile_edit-field pmpro_member_profile_edit-field-consent-phone">
+				<label for="bconsentPhone">' . esc_html( __( 'Subscribe me to your SMS lists', 'omnisend-paid-memberships-pro' ) ) . '</label>
 				<input id="bconsentPhone" name="bconsentPhone" ' . esc_html( $sms_consent ) . ' type="checkbox" class="input" value="1">
-			</div>';
+		</div>';
 	}
 
 	public function omnisend_save_profile_fields(): void {
