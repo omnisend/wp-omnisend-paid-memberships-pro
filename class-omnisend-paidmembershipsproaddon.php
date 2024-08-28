@@ -95,7 +95,7 @@ class Omnisend_PaidMembershipsProAddOn {
 
 		if ( ! Omnisend\SDK\V1\Omnisend::is_connected() ) {
 			deactivate_plugins( $paid_memberships_pro_addon_plugin );
-			add_action( 'admin_notices', array( 'Omnisend_PaidMembershipsProAddOn', 'omnisend_api_key_notice' ) );
+			add_action( 'admin_notices', array( 'Omnisend_PaidMembershipsProAddOn', 'omnisend_is_not_connected_notice' ) );
 
 			return;
 		}
@@ -111,9 +111,9 @@ class Omnisend_PaidMembershipsProAddOn {
 	}
 
 	/**
-	 * Display a notice for the missing Omnisend API key.
+	 * Display a notice if Omnisend is not connected.
 	 */
-	public static function omnisend_api_key_notice() {
+	public static function omnisend_is_not_connected_notice() {
 		echo '<div class="error"><p>' . esc_html__( 'Your Omnisend is not configured properly. Please configure it firstly', 'omnisend-paid-memberships-pro' ) . '</p></div>';
 	}
 
