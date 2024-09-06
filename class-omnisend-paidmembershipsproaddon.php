@@ -19,6 +19,7 @@
 use Omnisend\PaidMembershipsProAddon\Actions\OmnisendAddOnAction;
 use Omnisend\PaidMembershipsProAddon\Service\SettingsService;
 use Omnisend\PaidMembershipsProAddon\Service\ConsentService;
+use Omnisend\PaidMembershipsProAddon\Service\OmnisendApiService;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,6 +32,7 @@ spl_autoload_register( array( 'Omnisend_PaidMembershipsProAddOn', 'autoloader' )
 add_action( 'plugins_loaded', array( 'Omnisend_PaidMembershipsProAddOn', 'check_plugin_requirements' ) );
 add_action( 'admin_enqueue_scripts', array( 'Omnisend_PaidMembershipsProAddOn', 'load_custom_wp_admin_style' ) );
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( 'Omnisend_PaidMembershipsProAddOn', 'add_settings_link' ) );
+register_activation_hook( __FILE__, array( 'Omnisend_PaidMembershipsProAddOn', 'pmp_plugin_activate' ) );
 
 $omnisend_pmp_addon_settings = new SettingsService();
 $omnisend_pmp_addon_consent  = new ConsentService();
@@ -143,6 +145,18 @@ class Omnisend_PaidMembershipsProAddOn {
 	 */
 	public static function paid_memberships_pro_notice() {
 		echo '<div class="error"><p>' . esc_html__( 'Plugin Omnisend for Paid Membership Pro Add-On is deactivated. Please install and activate Paid Memberships Pro plugin.', 'omnisend-paid-memberships-pro' ) . '</p></div>';
+	}
+
+	/**
+	 * Check if addon is activated for the first time
+	 */
+	public static function pmp_plugin_activate() {
+		if ( is_admin() && get_option( 'pmp_activated_plugin' ) != 'pmpro_plugin' ) {
+			$omnisend_api_service = new OmnisendApiService();
+			$omnisend_api_service->create_users_as_omnisend_contact();
+
+			add_option( 'pmp_activated_plugin', 'pmpro_plugin' );
+		}
 	}
 
 	/**
