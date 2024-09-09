@@ -88,32 +88,35 @@ class OmnisendApiService {
 			}
 		);
 
-		if ( ! empty( $non_admin_users ) ) {
-			foreach ( $non_admin_users as $user ) {
-				$level = pmpro_getMembershipLevelForUser( $user->ID );
-				if ( $level ) {
-					$pmpro_user_level_name = $level->name;
-				} else {
-					$pmpro_user_level_name = '';
-				}
+		if ( empty( $non_admin_users ) ) {
+			return;
+		}
 
-				$user_info = array(
-					'first_name' => get_user_meta( $user->ID, 'pmpro_bfirstname', true ),
-					'last_name'  => get_user_meta( $user->ID, 'pmpro_blastname', true ),
-					'address1'   => get_user_meta( $user->ID, 'pmpro_baddress1', true ),
-					'address2'   => get_user_meta( $user->ID, 'pmpro_baddress2', true ),
-					'city'       => get_user_meta( $user->ID, 'pmpro_bcity', true ),
-					'state'      => get_user_meta( $user->ID, 'pmpro_bstate', true ),
-					'zipcode'    => get_user_meta( $user->ID, 'pmpro_bzipcode', true ),
-					'country'    => get_user_meta( $user->ID, 'pmpro_bcountry', true ),
-					'phone'      => get_user_meta( $user->ID, 'pmpro_bphone', true ),
-					'email'      => $user->data->user_email,
-					'level_name' => $pmpro_user_level_name,
-				);
+		foreach ( $non_admin_users as $user ) {
+			$level = pmpro_getMembershipLevelForUser( $user->ID );
 
-				$contact = $this->contact_mapper->sync_contact( $user_info );
-				$this->client->save_contact( $contact );
+			$pmpro_user_level_name = '';
+
+			if ( $level ) {
+				$pmpro_user_level_name = $level->name;
 			}
+
+			$user_info = array(
+				'first_name' => get_user_meta( $user->ID, 'pmpro_bfirstname', true ),
+				'last_name'  => get_user_meta( $user->ID, 'pmpro_blastname', true ),
+				'address1'   => get_user_meta( $user->ID, 'pmpro_baddress1', true ),
+				'address2'   => get_user_meta( $user->ID, 'pmpro_baddress2', true ),
+				'city'       => get_user_meta( $user->ID, 'pmpro_bcity', true ),
+				'state'      => get_user_meta( $user->ID, 'pmpro_bstate', true ),
+				'zipcode'    => get_user_meta( $user->ID, 'pmpro_bzipcode', true ),
+				'country'    => get_user_meta( $user->ID, 'pmpro_bcountry', true ),
+				'phone'      => get_user_meta( $user->ID, 'pmpro_bphone', true ),
+				'email'      => $user->data->user_email,
+				'level_name' => $pmpro_user_level_name,
+			);
+
+			$contact = $this->contact_mapper->create_users_as_omnisend_contact( $user_info );
+			$this->client->save_contact( $contact );
 		}
 	}
 
