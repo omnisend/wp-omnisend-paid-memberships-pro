@@ -77,9 +77,9 @@ class OmnisendApiService {
 	}
 
 	/**
-	 * Creates an Omnisend contacts from existing users when plugin is activated.
+	 * Creates Omnisend contacts from existing users when plugin is activated.
 	 */
-	public function create_users_as_omnisend_contact(): void {
+	public function create_users_as_omnisend_contacts(): void {
 		$all_users       = get_users();
 		$non_admin_users = array_filter(
 			$all_users,
@@ -115,7 +115,7 @@ class OmnisendApiService {
 				'level_name' => $pmpro_user_level_name,
 			);
 
-			$contact = $this->contact_mapper->create_users_as_omnisend_contact( $user_info );
+			$contact = $this->contact_mapper->create_contact_from_user_info( $user_info );
 			$this->client->save_contact( $contact );
 		}
 	}

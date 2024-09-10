@@ -91,7 +91,7 @@ class ContactMapper {
 	 *
 	 * @return Contact object
 	 */
-	public function create_users_as_omnisend_contact( array $user_info ): Contact {
+	public function create_contact_from_user_info( array $user_info ): Contact {
 		$contact = new Contact();
 
 		$contact->set_email( $user_info['email'] );
