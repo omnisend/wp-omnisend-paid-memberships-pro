@@ -32,7 +32,7 @@ spl_autoload_register( array( 'Omnisend_PaidMembershipsProAddOn', 'autoloader' )
 add_action( 'plugins_loaded', array( 'Omnisend_PaidMembershipsProAddOn', 'check_plugin_requirements' ) );
 add_action( 'admin_enqueue_scripts', array( 'Omnisend_PaidMembershipsProAddOn', 'load_custom_wp_admin_style' ) );
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( 'Omnisend_PaidMembershipsProAddOn', 'add_settings_link' ) );
-register_activation_hook( __FILE__, array( 'Omnisend_PaidMembershipsProAddOn', 'pmp_initial_sync_made' ) );
+register_activation_hook( __FILE__, array( 'Omnisend_PaidMembershipsProAddOn', 'pmp_plugin_activate' ) );
 
 $omnisend_pmp_addon_settings = new SettingsService();
 $omnisend_pmp_addon_consent  = new ConsentService();
@@ -150,12 +150,12 @@ class Omnisend_PaidMembershipsProAddOn {
 	/**
 	 * Check if addon is activated for the first time
 	 */
-	public static function pmp_initial_sync_made() {
-		if ( is_admin() && get_option( 'pmp_activated_plugin' ) != 'pmpro_plugin' ) {
+	public static function pmp_plugin_activate() {
+		if ( is_admin() && ! get_option( 'pmp_initial_sync_made' ) ) {
 			$omnisend_api_service = new OmnisendApiService();
 			$omnisend_api_service->create_users_as_omnisend_contacts();
 
-			add_option( 'pmp_activated_plugin', 'pmpro_plugin' );
+			add_option( 'pmp_initial_sync_made', true );
 		}
 	}
 
