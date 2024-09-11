@@ -44,7 +44,7 @@ class OmnisendApiService {
 	private $response_validator;
 
 	/**
-	 * OmnisendApiService class constructor.OmnisendLifterLMSPlugin
+	 * OmnisendApiService class constructor.OmnisendPaidMerbershipsProPlugin
 	 */
 	public function __construct() {
 		$this->contact_mapper     = new ContactMapper();
