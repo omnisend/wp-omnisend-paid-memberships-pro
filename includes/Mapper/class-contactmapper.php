@@ -85,6 +85,32 @@ class ContactMapper {
 	}
 
 	/**
+	 * Create all users as Omnisend contacts as non-subscribers
+	 *
+	 * @param array $user_info
+	 *
+	 * @return Contact object
+	 */
+	public function create_contact_from_user_info( array $user_info ): Contact {
+		$contact = new Contact();
+
+		$contact->set_email( $user_info['email'] );
+		$contact->set_phone( $user_info['phone'] );
+		$contact->set_first_name( $user_info['first_name'] );
+		$contact->set_last_name( $user_info['last_name'] );
+		$contact->set_city( $user_info['city'] );
+		$contact->set_state( $user_info['state'] );
+		$contact->set_postal_code( $user_info['zipcode'] );
+		$contact->set_country( $user_info['country'] );
+		$contact->set_address( $user_info['address1'] . ' ' . $user_info['address2'] );
+
+		$contact->add_custom_property( 'membership_level', $user_info['level_name'] );
+		$contact->add_tag( self::CUSTOM_PREFIX );
+
+		return $contact;
+	}
+
+	/**
 	 * Update Omnisend contact on profile form change.
 	 *
 	 * @param array $mapped_fields

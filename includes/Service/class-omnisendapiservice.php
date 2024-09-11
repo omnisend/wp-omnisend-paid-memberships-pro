@@ -77,6 +77,50 @@ class OmnisendApiService {
 	}
 
 	/**
+	 * Creates Omnisend contacts from existing users when plugin is activated.
+	 */
+	public function create_users_as_omnisend_contacts(): void {
+		$all_users       = get_users();
+		$non_admin_users = array_filter(
+			$all_users,
+			function ( $user ) {
+				return ! in_array( 'administrator', $user->roles );
+			}
+		);
+
+		if ( empty( $non_admin_users ) ) {
+			return;
+		}
+
+		foreach ( $non_admin_users as $user ) {
+			$level = pmpro_getMembershipLevelForUser( $user->ID );
+
+			$pmpro_user_level_name = '';
+
+			if ( $level ) {
+				$pmpro_user_level_name = $level->name;
+			}
+
+			$user_info = array(
+				'first_name' => get_user_meta( $user->ID, 'pmpro_bfirstname', true ),
+				'last_name'  => get_user_meta( $user->ID, 'pmpro_blastname', true ),
+				'address1'   => get_user_meta( $user->ID, 'pmpro_baddress1', true ),
+				'address2'   => get_user_meta( $user->ID, 'pmpro_baddress2', true ),
+				'city'       => get_user_meta( $user->ID, 'pmpro_bcity', true ),
+				'state'      => get_user_meta( $user->ID, 'pmpro_bstate', true ),
+				'zipcode'    => get_user_meta( $user->ID, 'pmpro_bzipcode', true ),
+				'country'    => get_user_meta( $user->ID, 'pmpro_bcountry', true ),
+				'phone'      => get_user_meta( $user->ID, 'pmpro_bphone', true ),
+				'email'      => $user->data->user_email,
+				'level_name' => $pmpro_user_level_name,
+			);
+
+			$contact = $this->contact_mapper->create_contact_from_user_info( $user_info );
+			$this->client->save_contact( $contact );
+		}
+	}
+
+	/**
 	 * Update Omnisend contact by editing profile form.
 	 *
 	 * @param array $form_data The form data.
