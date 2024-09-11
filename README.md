@@ -1,6 +1,6 @@
-# wp-omnisend-lifterlms
+# wp-omnisend-paid-memberships-pro
 
-Plugin for _LifterLMS_ WordPress plugin. More information can be found [here](https://wordpress.com/plugins/paid-memberships-pro).
+Plugin for _Paid Memberships Pro_ WordPress plugin. More information can be found [here](https://wordpress.com/plugins/paid-memberships-pro).
 
 
 ## PHP Linting
