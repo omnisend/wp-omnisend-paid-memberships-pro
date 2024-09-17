@@ -103,18 +103,51 @@ class ConsentService {
 	public function omnisend_save_profile_fields(): void {
 		$current_user = wp_get_current_user();
 		if ( isset( $_POST['update_user_nonce'] ) && check_admin_referer( 'update-user_' . $current_user->ID, 'update_user_nonce' ) ) {
-			if ( isset( $_POST['action'] ) && 'update-profile' === $_POST['action'] && isset( $_REQUEST['user_email'] ) ) {
+			if ( isset( $_POST['action'] ) && 'update-profile' === $_POST['action'] && isset( $_POST['user_email'] ) ) {
+				$profile_fields               = array();
+				$profile_fields['first_name'] = sanitize_text_field( wp_unslash( $_POST['first_name'] ?? '' ) );
+				$profile_fields['last_name']  = sanitize_text_field( wp_unslash( $_POST['last_name'] ?? '' ) );
+				$profile_fields['user_email'] = sanitize_email( wp_unslash( $_POST['user_email'] ) );
+
+				if ( isset( $_POST['bconsentEmail'] ) ) {
+					$profile_fields['bconsentEmail'] = sanitize_text_field( wp_unslash( $_POST['bconsentEmail'] ) );
+				}
+
+				if ( isset( $_POST['bconsentPhone'] ) ) {
+					$profile_fields['bconsentPhone'] = sanitize_text_field( wp_unslash( $_POST['bconsentPhone'] ) );
+				}
+
 				$omnisend_api = new OmnisendApiService();
-				$omnisend_api->create_omnisend_profile_contact( $_REQUEST );
+				$omnisend_api->create_omnisend_profile_contact( $profile_fields );
 			}
 		}
 	}
 
 	public function omnisend_save_checkout_fields(): void {
 		if ( isset( $_POST['pmpro_checkout_nonce'] ) && check_admin_referer( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' ) ) {
-			if ( isset( $_REQUEST['bconsentEmail'] ) || isset( $_REQUEST['bconsentPhone'] ) || ! isset( $options['setting_field'] ) ) {
+			if ( isset( $_POST['bconsentEmail'] ) || isset( $_POST['bconsentPhone'] ) || ! isset( $_POST['setting_field'] ) ) {
+				$checkout_fields                = array();
+				$checkout_fields['bfirstname']  = sanitize_text_field( wp_unslash( $_POST['bfirstname'] ?? '' ) );
+				$checkout_fields['blastname']   = sanitize_text_field( wp_unslash( $_POST['blastname'] ?? '' ) );
+				$checkout_fields['baddress1']   = sanitize_text_field( wp_unslash( $_POST['baddress1'] ?? '' ) );
+				$checkout_fields['baddress2']   = sanitize_text_field( wp_unslash( $_POST['baddress2'] ?? '' ) );
+				$checkout_fields['bcity']       = sanitize_text_field( wp_unslash( $_POST['bcity'] ?? '' ) );
+				$checkout_fields['bstate']      = sanitize_text_field( wp_unslash( $_POST['bstate'] ?? '' ) );
+				$checkout_fields['bzipcode']    = sanitize_text_field( wp_unslash( $_POST['bzipcode'] ?? '' ) );
+				$checkout_fields['bcountry']    = sanitize_text_field( wp_unslash( $_POST['bcountry'] ?? '' ) );
+				$checkout_fields['bemail']      = sanitize_email( wp_unslash( $_POST['bemail'] ?? '' ) );
+				$checkout_fields['pmpro_level'] = sanitize_text_field( wp_unslash( $_POST['pmpro_level'] ?? '' ) );
+
+				if ( isset( $_POST['bconsentEmail'] ) ) {
+					$checkout_fields['bconsentEmail'] = sanitize_text_field( wp_unslash( $_POST['bconsentEmail'] ) );
+				}
+
+				if ( isset( $_POST['bconsentPhone'] ) ) {
+					$checkout_fields['bconsentPhone'] = sanitize_text_field( wp_unslash( $_POST['bconsentPhone'] ) );
+				}
+
 				$omnisend_api = new OmnisendApiService();
-				$omnisend_api->create_omnisend_contact( $_REQUEST );
+				$omnisend_api->create_omnisend_contact( $checkout_fields );
 			}
 		}
 	}

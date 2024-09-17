@@ -7,7 +7,7 @@
  * Author URI: https://www.omnisend.com
  * Developer: Omnisend
  * Developer URI: https://omnisend.com
- * Text Domain: omnisend-for-paid-memberships-pro-add-on
+ * Text Domain: omnisend-for-paid-memberships-pro
  * ------------------------------------------------------------------------
  * Copyright 2024 Omnisend
  * License: GNU General Public License v3.0
