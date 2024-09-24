@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'OMNISEND_MEMBERSHIPS_ADDON_NAME', 'Omnisend for Paid Memberships Pro Add-On' );
-define( 'OMNISEND_MEMBERSHIPS_ADDON_VERSION', '1.0.0' );
+define( 'OMNISEND_MEMBERSHIPS_ADDON_VERSION', '1.0.2' );
 
 spl_autoload_register( array( 'Omnisend_PaidMembershipsProAddOn', 'autoloader' ) );
 add_action( 'plugins_loaded', array( 'Omnisend_PaidMembershipsProAddOn', 'check_plugin_requirements' ) );
