@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Omnisend for Paid Memberships Pro Add-On
  * Description: A Paid Memberships Pro add-on to sync contacts with Omnisend. In collaboration with Paid Memberships Pro plugin it enables better customer tracking
- * Version: 1.0.0
+ * Version: 1.0.2
  * Author: Omnisend
  * Author URI: https://www.omnisend.com
  * Developer: Omnisend
