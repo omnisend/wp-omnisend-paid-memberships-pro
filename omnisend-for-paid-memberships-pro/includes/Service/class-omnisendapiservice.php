@@ -13,6 +13,7 @@ use Omnisend\PaidMembershipsProAddon\Actions\OmnisendAddOnAction;
 use Omnisend\PaidMembershipsProAddon\Mapper\ContactMapper;
 use Omnisend\PaidMembershipsProAddon\Validator\ResponseValidator;
 use Omnisend\SDK\V1\Omnisend;
+use TypeError;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -144,15 +145,22 @@ class OmnisendApiService {
 	public function get_omnisend_contact_consent(): array {
 		$current_user = wp_get_current_user();
 
-		if ( isset( $current_user->user_email ) ) {
-			$user_email = $current_user->user_email;
-			$response   = $this->client->get_contact_by_email( $user_email );
+		try {
+			if ( isset( $current_user->user_email ) ) {
+				$user_email = $current_user->user_email;
+				$response   = $this->client->get_contact_by_email( $user_email );
 
-			$contract_data['sms']   = $response->get_contact()->get_phone_status();
-			$contract_data['email'] = $response->get_contact()->get_email_status();
-		} else {
-			$contract_data['sms']   = '';
-			$contract_data['email'] = '';
+				$contract_data['sms']   = $response->get_contact()->get_phone_status();
+				$contract_data['email'] = $response->get_contact()->get_email_status();
+			} else {
+				$contract_data['sms']   = '';
+				$contract_data['email'] = '';
+			}
+		} catch ( TypeError $ex ) {
+			$contract_data = array(
+				'sms'   => false,
+				'email' => false,
+			);
 		}
 
 		return $contract_data;

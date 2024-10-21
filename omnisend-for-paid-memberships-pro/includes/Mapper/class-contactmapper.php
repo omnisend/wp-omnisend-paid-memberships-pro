@@ -41,7 +41,7 @@ class ContactMapper {
 		}
 
 		$contact->set_email( $user_email );
-		$contact->set_phone( $mapped_fields['bphone'] );
+		$contact->set_phone( $mapped_fields['bphone'] ?? '' );
 		$contact->set_first_name( $mapped_fields['bfirstname'] ?? '' );
 		$contact->set_last_name( $mapped_fields['blastname'] ?? '' );
 		$contact->set_postal_code( $mapped_fields['bzipcode'] ?? '' );
