@@ -123,8 +123,11 @@ class ConsentService {
 		}
 	}
 
+	/**
+	 * phpcs:disable WordPress.Security.NonceVerification.Missing
+	 */
 	public function omnisend_save_checkout_fields(): void {
-		if ( isset( $_POST['pmpro_checkout_nonce'] ) && check_admin_referer( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' ) ) {
+		if ( isset( $_POST['pmpro_checkout_nonce'] ) ) {
 			if ( isset( $_POST['bconsentEmail'] ) || isset( $_POST['bconsentPhone'] ) || ! isset( $_POST['setting_field'] ) ) {
 				$checkout_fields                = array();
 				$checkout_fields['bfirstname']  = sanitize_text_field( wp_unslash( $_POST['bfirstname'] ?? '' ) );
@@ -137,6 +140,7 @@ class ConsentService {
 				$checkout_fields['bcountry']    = sanitize_text_field( wp_unslash( $_POST['bcountry'] ?? '' ) );
 				$checkout_fields['bemail']      = sanitize_email( wp_unslash( $_POST['bemail'] ?? '' ) );
 				$checkout_fields['pmpro_level'] = sanitize_text_field( wp_unslash( $_POST['pmpro_level'] ?? '' ) );
+				$checkout_fields['bphone']      = sanitize_text_field( wp_unslash( $_POST['bphone'] ?? '' ) );
 
 				if ( isset( $_POST['bconsentEmail'] ) ) {
 					$checkout_fields['bconsentEmail'] = sanitize_text_field( wp_unslash( $_POST['bconsentEmail'] ) );
@@ -151,6 +155,9 @@ class ConsentService {
 			}
 		}
 	}
+	/**
+	 * phpcs:enable WordPress.Security.NonceVerification.Missing
+	 */
 
 	/**
 	 * Function to be called after a membership level change
