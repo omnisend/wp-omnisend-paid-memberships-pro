@@ -35,6 +35,7 @@ class ContactMapper {
 
 		$current_user = wp_get_current_user();
 		$user_email   = $current_user->user_email;
+		$options      = get_option( 'omnisend_pmp_options' );
 
 		if ( 0 != $current_user->ID ) {
 			$user_email = $mapped_fields['bemail'];
@@ -51,7 +52,7 @@ class ContactMapper {
 		$contact->set_city( $mapped_fields['bcity'] ?? '' );
 		$contact->set_welcome_email( true );
 
-		if ( ! isset( $options['setting_field'] ) ) {
+		if ( isset( $options['setting_field'] ) ) {
 			if ( isset( $mapped_fields['bconsentEmail'] ) ) {
 				$contact->set_email_subscriber();
 				$contact->set_email_consent( self::CONSENT_PREFIX );
@@ -120,6 +121,7 @@ class ContactMapper {
 	 */
 	public function update_profile_contact( array $mapped_fields, string $phone_number = null ): Contact {
 		$contact = new Contact();
+		$options = get_option( 'omnisend_pmp_options' );
 
 		$contact->set_email( $mapped_fields['user_email'] );
 		if ( isset( $phone_number ) ) {
@@ -128,7 +130,7 @@ class ContactMapper {
 		$contact->set_first_name( $mapped_fields['first_name'] ?? '' );
 		$contact->set_last_name( $mapped_fields['last_name'] ?? '' );
 
-		if ( ! isset( $options['setting_field'] ) ) {
+		if ( isset( $options['setting_field'] ) ) {
 			if ( isset( $mapped_fields['bconsentEmail'] ) ) {
 				$contact->set_email_subscriber();
 				$contact->set_email_consent( self::CONSENT_PREFIX );
