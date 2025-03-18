@@ -21,7 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package Omnisend\PaidMembershipsProAddon\Validator
  */
 class ResponseValidator {
-
 	/**
 	 * Validates response.
 	 *

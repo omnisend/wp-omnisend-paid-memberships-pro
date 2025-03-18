@@ -19,20 +19,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package Omnisend\PaidMembershipsProAddon\Service
  */
 class ConsentService {
-
 	public function __construct() {
 		$options = get_option( 'omnisend_pmp_options' );
 		if ( isset( $options['setting_field'] ) ) {
 			add_action( 'pmpro_checkout_after_billing_fields', array( $this, 'omnisend_consent_billing_fields' ), 10, 1 );
 			add_action( 'pmpro_checkout_after_user_fields', array( $this, 'omnisend_consent_checkout_fields' ), 10, 1 );
 			add_action( 'pmpro_show_user_profile', array( $this, 'omnisend_consent_profile_edit_fields' ), 10, 1 );
-			add_action( 'pmpro_after_change_membership_level', array( $this, 'omnisend_update_membership_lvl' ), 10, 3 );
+			add_action( 'pmpro_after_all_membership_level_changes', array( $this, 'omnisend_update_membership_lvl' ), 10, 3 );
 		}
 
 		add_action( 'pmpro_after_checkout', array( $this, 'omnisend_save_checkout_fields' ), 10, 1 );
 		add_action( 'pmpro_member_profile_edit_form_tag', array( $this, 'omnisend_save_profile_fields' ) );
 	}
 
+	/**
+	 * Adds consent fields to checkout
+	 *
+	 * @return void
+	 */
 	public function omnisend_consent_billing_fields(): void {
 		$omnisend_api  = new OmnisendApiService();
 		$contract_data = $omnisend_api->get_omnisend_contact_consent();
@@ -65,6 +69,11 @@ class ConsentService {
 		echo '</div>';
 	}
 
+	/**
+	 * Adds email consent for user with ID 0
+	 *
+	 * @return void
+	 */
 	public function omnisend_consent_checkout_fields(): void {
 		$current_user = wp_get_current_user();
 		if ( 0 == $current_user->ID ) {
@@ -75,6 +84,11 @@ class ConsentService {
 		}
 	}
 
+	/**
+	 * Adds consent fields for profile edit
+	 *
+	 * @return void
+	 */
 	public function omnisend_consent_profile_edit_fields(): void {
 		$omnisend_api  = new OmnisendApiService();
 		$contract_data = $omnisend_api->get_omnisend_contact_consent();
@@ -100,6 +114,11 @@ class ConsentService {
 		</div>';
 	}
 
+	/**
+	 * Updates contact when profile fields are saved
+	 *
+	 * @return void
+	 */
 	public function omnisend_save_profile_fields(): void {
 		$current_user = wp_get_current_user();
 		if ( isset( $_POST['update_user_nonce'] ) && check_admin_referer( 'update-user_' . $current_user->ID, 'update_user_nonce' ) ) {
@@ -160,19 +179,30 @@ class ConsentService {
 	 */
 
 	/**
-	 * Function to be called after a membership level change
+	 * Function to be called after a membership level changes, updates Omnisend contact
 	 *
-	 * @param int $level_id The ID of the new membership level.
-	 * @param int $user_id The ID of the user.
+	 * @param array $pmpro_old_user_levels
+	 *
+	 * @return void
 	 */
-	public function omnisend_update_membership_lvl( int $level_id, int $user_id ): void {
-		$user       = get_userdata( $user_id );
-		$user_email = $user->user_email;
-		$new_level  = pmpro_getLevel( $level_id );
+	public function omnisend_update_membership_lvl( array $pmpro_old_user_levels ): void {
+		foreach ( $pmpro_old_user_levels as $user_id => $old_levels ) {
+			$new_levels = pmpro_getMembershipLevelsForUser( $user_id );
+			$tags       = '';
 
-		if ( isset( $new_level->name ) ) {
+			foreach ( $new_levels as $new_level ) {
+				if ( ! property_exists( $new_level, 'name' ) ) {
+					continue;
+				}
+
+				$tags .= $new_level->name . ', ';
+			}
+
+			$user       = get_userdata( $user_id );
+			$user_email = $user->user_email;
+
 			$omnisend_api = new OmnisendApiService();
-			$omnisend_api->update_membership_level( $user_email, $new_level->name );
+			$omnisend_api->update_membership_level( $user_email, $tags );
 		}
 	}
 }

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Omnisend\PaidMembershipsProAddon\Mapper;
 
-use Omnisend\PaidMembershipsProAddon\Actions\OmnisendAddOnAction;
 use Omnisend\SDK\V1\Contact;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +25,7 @@ class ContactMapper {
 	/**
 	 * Create/update Omnisend contact
 	 *
-	 * @param array  $mapped_fields
+	 * @param array $mapped_fields
 	 *
 	 * @return Contact object
 	 */
@@ -77,7 +76,7 @@ class ContactMapper {
 		}
 
 		if ( isset( $mapped_fields['pmpro_level'] ) ) {
-			$contact->add_custom_property( 'membership_level', $this->get_pmpro_level_name( (int) $mapped_fields['pmpro_level'] ) );
+			$contact->add_custom_property( 'membership_levels', $this->get_pmpro_level_names( $current_user->ID ) );
 		}
 
 		$contact->add_tag( self::CUSTOM_PREFIX );
@@ -93,7 +92,8 @@ class ContactMapper {
 	 * @return Contact object
 	 */
 	public function create_contact_from_user_info( array $user_info ): Contact {
-		$contact = new Contact();
+		$contact      = new Contact();
+		$current_user = get_user_by( 'email', $user_info['email'] );
 
 		$contact->set_email( $user_info['email'] );
 		$contact->set_phone( $user_info['phone'] );
@@ -105,7 +105,7 @@ class ContactMapper {
 		$contact->set_country( $user_info['country'] );
 		$contact->set_address( $user_info['address1'] . ' ' . $user_info['address2'] );
 
-		$contact->add_custom_property( 'membership_level', $user_info['level_name'] );
+		$contact->add_custom_property( 'membership_levels', $this->get_pmpro_level_names( $current_user->ID ) );
 		$contact->add_tag( self::CUSTOM_PREFIX );
 
 		return $contact;
@@ -177,25 +177,31 @@ class ContactMapper {
 
 		$contact->set_email( $user_email );
 		if ( '' != $membership_level ) {
-			$contact->add_custom_property( 'membership_level', $membership_level );
+			$contact->add_custom_property( 'membership_levels', $membership_level );
 		}
 
 		return $contact;
 	}
 
 	/**
-	 * Get PMP membership level name
+	 * Get PMP membership level names
 	 *
-	 * @param int $level_id
+	 * @param int $user_id
 	 *
-	 * @return string object
+	 * @return string
 	 */
-	public function get_pmpro_level_name( int $level_id ): string {
-		$level = pmpro_getLevel( $level_id );
+	private function get_pmpro_level_names( int $user_id ): string {
+		$new_levels = pmpro_getMembershipLevelsForUser( $user_id );
+		$tags       = '';
 
-		if ( $level ) {
-			return $level->name;
+		foreach ( $new_levels as $new_level ) {
+			if ( ! property_exists( $new_level, 'name' ) ) {
+				continue;
+			}
+
+			$tags .= $new_level->name . ', ';
 		}
-		return '';
+
+		return $tags;
 	}
 }

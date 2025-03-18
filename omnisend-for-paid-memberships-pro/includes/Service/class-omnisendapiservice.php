@@ -13,7 +13,9 @@ use Omnisend\PaidMembershipsProAddon\Actions\OmnisendAddOnAction;
 use Omnisend\PaidMembershipsProAddon\Mapper\ContactMapper;
 use Omnisend\PaidMembershipsProAddon\Validator\ResponseValidator;
 use Omnisend\SDK\V1\Omnisend;
+use Omnisend\SDK\V1\Batch;
 use TypeError;
+use WP_User;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -23,6 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Omnisend API Service.
  */
 class OmnisendApiService {
+	private const CONTACT_BATCH_LIMIT = 60;
+
 	/**
 	 * Contact mapper.
 	 *
@@ -33,7 +37,7 @@ class OmnisendApiService {
 	/**
 	 * Omnisend client
 	 *
-	 * @var Omnisend
+	 * @var Client
 	 */
 	private $client;
 
@@ -79,46 +83,93 @@ class OmnisendApiService {
 
 	/**
 	 * Creates Omnisend contacts from existing users when plugin is activated.
+	 *
+	 * @return void
 	 */
 	public function create_users_as_omnisend_contacts(): void {
-		$all_users       = get_users();
-		$non_admin_users = array_filter(
-			$all_users,
-			function ( $user ) {
-				return ! in_array( 'administrator', $user->roles );
-			}
-		);
+		$cycle = 0;
 
-		if ( empty( $non_admin_users ) ) {
+		while ( true ) {
+			$contacts  = array();
+			$all_users = get_users(
+				array(
+					'number' => self::CONTACT_BATCH_LIMIT,
+					'offset' => self::CONTACT_BATCH_LIMIT * $cycle++,
+				)
+			);
+
+			$non_admin_users = array_filter(
+				$all_users,
+				function ( $user ) {
+					return ! in_array( 'administrator', $user->roles );
+				}
+			);
+
+			if ( empty( $non_admin_users ) ) {
+				return;
+			}
+
+			$all_users = array();
+
+			foreach ( $non_admin_users as $user ) {
+				$user_info  = $this->get_user_info( $user );
+				$contacts[] = $this->contact_mapper->create_contact_from_user_info( $user_info );
+			}
+
+			$this->send_batch( $contacts, Batch::POST_METHOD );
+		}
+	}
+
+	/**
+	 * Gets user array with PMP data for use as Omnisend contact
+	 *
+	 * @param WP_User $user
+	 *
+	 * @return array
+	 */
+	private function get_user_info( WP_User $user ): array {
+		$user_id = $user->ID;
+		$level   = pmpro_getMembershipLevelForUser( $user_id );
+
+		$pmpro_user_level_name = '';
+
+		if ( $level ) {
+			$pmpro_user_level_name = $level->name;
+		}
+
+		return array(
+			'email'      => $user->data->user_email,
+			'first_name' => get_user_meta( $user_id, 'pmpro_bfirstname', true ),
+			'last_name'  => get_user_meta( $user_id, 'pmpro_blastname', true ),
+			'address1'   => get_user_meta( $user_id, 'pmpro_baddress1', true ),
+			'address2'   => get_user_meta( $user_id, 'pmpro_baddress2', true ),
+			'city'       => get_user_meta( $user_id, 'pmpro_bcity', true ),
+			'state'      => get_user_meta( $user_id, 'pmpro_bstate', true ),
+			'zipcode'    => get_user_meta( $user_id, 'pmpro_bzipcode', true ),
+			'country'    => get_user_meta( $user_id, 'pmpro_bcountry', true ),
+			'phone'      => get_user_meta( $user_id, 'pmpro_bphone', true ),
+			'level_name' => $pmpro_user_level_name,
+		);
+	}
+
+	/**
+	 * Sends batch to Omnisend
+	 *
+	 * @param array  $items
+	 * @param string $method
+	 *
+	 * @return void
+	 */
+	private function send_batch( array $items, string $method ): void {
+		if ( empty( $items ) ) {
 			return;
 		}
 
-		foreach ( $non_admin_users as $user ) {
-			$level = pmpro_getMembershipLevelForUser( $user->ID );
+		$batch = new Batch();
+		$batch->set_items( $items );
+		$batch->set_method( $method );
 
-			$pmpro_user_level_name = '';
-
-			if ( $level ) {
-				$pmpro_user_level_name = $level->name;
-			}
-
-			$user_info = array(
-				'first_name' => get_user_meta( $user->ID, 'pmpro_bfirstname', true ),
-				'last_name'  => get_user_meta( $user->ID, 'pmpro_blastname', true ),
-				'address1'   => get_user_meta( $user->ID, 'pmpro_baddress1', true ),
-				'address2'   => get_user_meta( $user->ID, 'pmpro_baddress2', true ),
-				'city'       => get_user_meta( $user->ID, 'pmpro_bcity', true ),
-				'state'      => get_user_meta( $user->ID, 'pmpro_bstate', true ),
-				'zipcode'    => get_user_meta( $user->ID, 'pmpro_bzipcode', true ),
-				'country'    => get_user_meta( $user->ID, 'pmpro_bcountry', true ),
-				'phone'      => get_user_meta( $user->ID, 'pmpro_bphone', true ),
-				'email'      => $user->data->user_email,
-				'level_name' => $pmpro_user_level_name,
-			);
-
-			$contact = $this->contact_mapper->create_contact_from_user_info( $user_info );
-			$this->client->save_contact( $contact );
-		}
+		$this->client->send_batch( $batch );
 	}
 
 	/**
@@ -126,6 +177,7 @@ class OmnisendApiService {
 	 *
 	 * @param array $form_data The form data.
 	 *
+	 * @return void
 	 */
 	public function create_omnisend_profile_contact( array $form_data ): void {
 		$current_user = wp_get_current_user();
@@ -172,6 +224,7 @@ class OmnisendApiService {
 	 * @param string $user_email The form data.
 	 * @param string $membership_level The form data.
 	 *
+	 * @return void
 	 */
 	public function update_membership_level( string $user_email, string $membership_level ): void {
 		$contact = $this->contact_mapper->update_membership_level( $user_email, $membership_level );
