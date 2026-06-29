@@ -3,9 +3,9 @@ Plugin Name: Omnisend for Paid Memberships Pro Add-On
 Contributors: omnisend
 Tags: Paid Memberships Pro, form, email marketing, web tracking, subscriber collection
 Requires at least: 4.7.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.9
+Stable tag: 1.0.10
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -52,6 +52,9 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 7. Convert more visitors with highly-targeted landing pages
 
 == Changelog ==
+
+= 1.0.10 =
+* Updated for WordPress 7.0 compatibility.
 
 = 1.0.9 =
 * Tested up to WordPress 6.9
