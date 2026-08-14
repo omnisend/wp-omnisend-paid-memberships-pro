@@ -6,8 +6,6 @@ Requires [Paid Memberships Pro](https://wordpress.org/plugins/paid-memberships-p
 
 WordPress plugin: https://wordpress.org/plugins/omnisend-for-paid-memberships-pro-add-on/
 
-Plugin for _Paid Memberships Pro_ WordPress plugin. More information can be found [here](https://wordpress.com/plugins/paid-memberships-pro).
-
 ## PHP Linting
 
 WordPress.org team mandates our plugin to be linted
