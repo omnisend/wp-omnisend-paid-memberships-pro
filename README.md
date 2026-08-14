@@ -2,7 +2,7 @@
 
 Automatically syncs Paid Memberships Pro contacts, new subscribers, and their membership levels to Omnisend.
 
-Requires the [Omnisend](https://wordpress.org/plugins/omnisend/) plugin.
+Requires [Paid Memberships Pro](https://wordpress.org/plugins/paid-memberships-pro/) and the [Omnisend](https://wordpress.org/plugins/omnisend/) plugin.
 
 WordPress plugin: https://wordpress.org/plugins/omnisend-for-paid-memberships-pro-add-on/
 
