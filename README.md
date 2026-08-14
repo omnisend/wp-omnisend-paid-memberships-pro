@@ -1,7 +1,10 @@
-# wp-omnisend-paid-memberships-pro
+# Omnisend for Paid Memberships Pro Add-On
 
-Plugin for _Paid Memberships Pro_ WordPress plugin. More information can be found [here](https://wordpress.com/plugins/paid-memberships-pro).
+Automatically syncs Paid Memberships Pro contacts, new subscribers, and their membership levels to Omnisend.
 
+Requires [Paid Memberships Pro](https://wordpress.org/plugins/paid-memberships-pro/) and the [Omnisend](https://wordpress.org/plugins/omnisend/) plugin.
+
+WordPress plugin: https://wordpress.org/plugins/omnisend-for-paid-memberships-pro-add-on/
 
 ## PHP Linting
 
@@ -41,3 +44,4 @@ A second `phpcbf` script can be run to automatically correct coding standard vio
 
 ```shell
 ./vendor/squizlabs/php_codesniffer/bin/phpcbf --ignore=.js --standard=WordPress omnisend-connect
+```
