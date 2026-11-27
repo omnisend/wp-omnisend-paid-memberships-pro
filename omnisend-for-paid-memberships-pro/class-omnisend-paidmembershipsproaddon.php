@@ -17,7 +17,6 @@
  * @package OmnisendPaidMerbershipsProPlugin
  */
 
-use Omnisend\PaidMembershipsProAddon\Actions\OmnisendAddOnAction;
 use Omnisend\PaidMembershipsProAddon\Service\SettingsService;
 use Omnisend\PaidMembershipsProAddon\Service\ConsentService;
 use Omnisend\PaidMembershipsProAddon\Cron\OmnisendInitialSync;
@@ -44,19 +43,6 @@ $omnisend_pmp_addon_consent  = new ConsentService();
  * Class Omnisend_PaidMembershipsProAddOn
  */
 class Omnisend_PaidMembershipsProAddOn {
-	/**
-	 * Register actions for the Omnisend Paid memberships Pro Add-On.
-	 *
-	 * @param array $actions The array of actions.
-	 *
-	 * @return array The modified array of actions.
-	 */
-	public static function register_actions( $actions ) {
-		new OmnisendAddOnAction();
-
-		return $actions;
-	}
-
 	/**
 	 * Registers initial sync event
 	 *
@@ -181,7 +167,6 @@ class Omnisend_PaidMembershipsProAddOn {
 		}
 
 		add_action( 'init', array( 'Omnisend_PaidMembershipsProAddOn', 'register_sync_actions' ) );
-		add_action( 'pmp_registered_form_actions', array( 'Omnisend_PaidMembershipsProAddOn', 'register_actions' ), 10, 1 );
 	}
 
 	/**

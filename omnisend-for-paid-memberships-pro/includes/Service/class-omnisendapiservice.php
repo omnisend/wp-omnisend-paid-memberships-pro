@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Omnisend\PaidMembershipsProAddon\Service;
 
-use Omnisend\PaidMembershipsProAddon\Actions\OmnisendAddOnAction;
 use Omnisend\PaidMembershipsProAddon\Mapper\ContactMapper;
 use Omnisend\PaidMembershipsProAddon\Validator\ResponseValidator;
 use Omnisend\SDK\V1\Omnisend;
@@ -65,20 +64,13 @@ class OmnisendApiService {
 	 *
 	 * @param array $form_data The form data.
 	 *
-	 * @return array Tracker data.
+	 * @return void
 	 */
-	public function create_omnisend_contact( array $form_data ): array {
+	public function create_omnisend_contact( array $form_data ): void {
 		$contact  = $this->contact_mapper->create_contact( $form_data );
 		$response = $this->client->save_contact( $contact );
 
-		if ( ! $this->response_validator->is_valid( $response ) ) {
-			return array();
-		}
-
-		return array(
-			OmnisendAddOnAction::EMAIL        => $form_data['bemail'],
-			OmnisendAddOnAction::PHONE_NUMBER => $form_data['bphone'],
-		);
+		$this->response_validator->is_valid( $response );
 	}
 
 	/**
