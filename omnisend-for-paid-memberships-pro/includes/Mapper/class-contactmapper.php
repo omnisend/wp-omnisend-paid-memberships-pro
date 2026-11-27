@@ -144,11 +144,6 @@ class ContactMapper {
 					$contact->set_phone_consent( self::CONSENT_PREFIX );
 					$contact->set_phone_subscriber();
 				}
-
-				if ( isset( $mapped_fields['bphone'] ) ) {
-					$contact->set_phone_consent( self::CONSENT_PREFIX );
-					$contact->set_phone_subscriber();
-				}
 			} else {
 				$contact->set_phone_consent( self::CONSENT_PREFIX );
 				$contact->set_phone_unsubscriber();
